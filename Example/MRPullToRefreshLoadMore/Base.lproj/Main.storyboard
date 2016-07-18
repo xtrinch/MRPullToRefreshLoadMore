@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModule="MRPullToRefreshLoadMore_Example" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -15,8 +16,48 @@
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8DH-CF-yuf" customClass="MRPullToRefreshLoadMore" customModule="MRPullToRefreshLoadMore">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="yNz-fx-kVs" customClass="MRPullToRefreshLoad">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="580"/>
+                                        <color key="backgroundColor" red="0.90983051061630249" green="0.63620418310165405" blue="0.92435961961746216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TableViewCell" id="M0w-AZ-7fz">
+                                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="M0w-AZ-7fz" id="AdN-fq-Gud">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <color key="backgroundColor" red="0.85097283124923706" green="0.39442384243011475" blue="0.90980356931686401" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </tableViewCellContentView>
+                                            </tableViewCell>
+                                        </prototypes>
+                                    </tableView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="yNz-fx-kVs" secondAttribute="bottom" id="NbG-yD-tWL"/>
+                                    <constraint firstAttribute="trailing" secondItem="yNz-fx-kVs" secondAttribute="trailing" id="k0V-KC-Es1"/>
+                                    <constraint firstItem="yNz-fx-kVs" firstAttribute="leading" secondItem="8DH-CF-yuf" secondAttribute="leading" id="qaJ-ci-47L"/>
+                                    <constraint firstItem="yNz-fx-kVs" firstAttribute="top" secondItem="8DH-CF-yuf" secondAttribute="top" id="wFj-Uf-RnA"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="8DH-CF-yuf" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="FhV-mj-BV4"/>
+                            <constraint firstAttribute="trailing" secondItem="8DH-CF-yuf" secondAttribute="trailing" id="TDU-cI-Ea4"/>
+                            <constraint firstItem="8DH-CF-yuf" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="Up5-ll-JgG"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="8DH-CF-yuf" secondAttribute="bottom" id="t4d-sl-WBC"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="pullToRefreshView" destination="8DH-CF-yuf" id="3IE-O1-vKc"/>
+                        <outlet property="tableView" destination="yNz-fx-kVs" id="fdF-Ir-9dN"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>

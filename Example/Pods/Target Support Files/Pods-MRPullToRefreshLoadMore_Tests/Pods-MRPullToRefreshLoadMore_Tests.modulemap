@@ -1,0 +1,6 @@
+framework module Pods_MRPullToRefreshLoadMore_Tests {
+  umbrella header "Pods-MRPullToRefreshLoadMore_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
