@@ -11,16 +11,16 @@ import MRPullToRefreshLoadMore
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, MRPullToRefreshLoadMoreDelegate {
 
-    @IBOutlet var pullToRefreshView: MRPullToRefreshLoadMore!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableView: MRTableView!
+    
+    var moreLoaded = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        pullToRefreshView.initWithScrollView(tableView)
-        pullToRefreshView.delegate = self
-        tableView.delegate = self
+        tableView.pullToRefresh.pullToRefreshLoadMoreDelegate = self
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -36,7 +36,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        if (!moreLoaded) {
+            return 20
+        } else {
+            return 40
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -52,7 +56,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         //
         print("view should refresh")
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-            self.pullToRefreshView.setState(MRPullToRefreshLoadMore.ViewState.Normal)
+            self.tableView.pullToRefresh.setState(MRPullToRefreshLoadMore.ViewState.Normal)
         }
         
     }
@@ -60,6 +64,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func viewShouldLoadMore() {
         //
         print("view should load more")
+        moreLoaded = true
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
+            self.tableView.reloadData()
+            self.tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
+        }
     }
 }
 
