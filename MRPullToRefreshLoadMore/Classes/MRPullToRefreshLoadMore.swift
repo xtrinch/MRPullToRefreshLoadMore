@@ -24,8 +24,18 @@ public class MRPullToRefreshLoadMore:NSObject {
     
     public enum ViewState {
         case Normal
-        case Loading
-        case Ready
+        case LoadingHorizontal
+        case LoadingVertical
+        case ReadyHorizontal
+        case ReadyVertical
+    }
+    
+    public enum Drag {
+        case Left
+        case Top
+        case Right
+        case Bottom
+        case None
     }
     
     public func initWithScrollView(scrollView:UIScrollView) {
@@ -47,7 +57,7 @@ public class MRPullToRefreshLoadMore:NSObject {
         loadMoreViewState = state
         
         switch (state) {
-            case ViewState.Ready:
+            case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
                 scrollView!.contentInset = self.startingContentInset!
                 indicatorLoadMore.setAnimating(false)
                 
@@ -57,7 +67,7 @@ public class MRPullToRefreshLoadMore:NSObject {
                     self.scrollView!.contentInset = self.startingContentInset!
                 })
                 
-            case ViewState.Loading:
+            case ViewState.LoadingVertical, ViewState.LoadingHorizontal:
                 indicatorLoadMore.setAnimating(true)
                 scrollView!.contentInset = UIEdgeInsetsMake(0.0, 0.0, 60.0, 0.0)
                 
@@ -71,7 +81,7 @@ public class MRPullToRefreshLoadMore:NSObject {
         pullToRefreshViewState = state
         
         switch (state) {
-            case ViewState.Ready:
+            case ViewState.ReadyHorizontal, ViewState.ReadyVertical:
                 scrollView!.contentInset = self.startingContentInset!
                 indicatorPullToRefresh.setAnimating(false)
             
@@ -81,7 +91,11 @@ public class MRPullToRefreshLoadMore:NSObject {
                     self.scrollView!.contentInset = self.startingContentInset!
                 })
             
-            case ViewState.Loading:
+            case ViewState.LoadingHorizontal:
+                indicatorPullToRefresh.setAnimating(true)
+                scrollView!.contentInset = UIEdgeInsetsMake(0.0, 60.0, 0.0, 0.0)
+            
+            case ViewState.LoadingVertical:
                 indicatorPullToRefresh.setAnimating(true)
                 scrollView!.contentInset = UIEdgeInsetsMake(60.0, 0.0, 0.0, 0.0)
             
@@ -90,79 +104,96 @@ public class MRPullToRefreshLoadMore:NSObject {
         }
     }
     
+    
     override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         switch (keyPath) {
         case .Some("contentOffset"):
-            indicatorPullToRefresh.frame = CGRectMake(scrollView!.bounds.width/2 - indicatorSize.width/2, -scrollView!.bounds.origin.y - 45 + scrollView!.contentOffset.y, indicatorSize.width, indicatorSize.height)
-            indicatorLoadMore.frame = CGRectMake(scrollView!.bounds.width/2 - indicatorSize.width/2, 15 + scrollView!.contentSize.height, indicatorSize.width, indicatorSize.height)
             
             if (enabled) {
+                
+                
+                // HORIZONTAL SCROLL
+                let diff_x_end = scrollView!.contentOffset.x + scrollView!.bounds.width - scrollView!.contentSize.width
+                let diff_x_start = 0 - scrollView!.contentOffset.x
+                
+                let diff_y_end = scrollView!.contentOffset.y + scrollView!.bounds.height - scrollView!.contentSize.height
+                let diff_y_start = 0 - scrollView!.contentOffset.y
+                
+                var drag:Drag = .None
+                
+                // pull to refresh
+                if diff_x_start > 0 {
+                    drag = .Left
+                } else if diff_y_start > 0 {
+                    drag = .Top
+                } else if diff_x_end > 0 {
+                    drag = .Right
+                } else if diff_y_end > 0 {
+                    drag = .Bottom
+                }
+                
+                switch(drag) {
+                case .Top:
+                    indicatorPullToRefresh.frame = CGRectMake(scrollView!.bounds.width/2 - indicatorSize.width/2, -scrollView!.bounds.origin.y - 45 + scrollView!.contentOffset.y, indicatorSize.width, indicatorSize.height)
+                case .Left:
+                    indicatorPullToRefresh.frame = CGRectMake(-45, scrollView!.bounds.height/2 - 15, indicatorSize.width, indicatorSize.height)
+                case .Bottom:
+                    indicatorLoadMore.frame = CGRectMake(scrollView!.bounds.width/2 - indicatorSize.width/2, 15 + scrollView!.contentSize.height, indicatorSize.width, indicatorSize.height)
+                default: break
+                }
+                
+                
                 if (scrollView!.dragging) {
-                    
-                    // HORIZONTAL SCROLL
-                    let diff_x_end = scrollView!.contentOffset.x + scrollView!.bounds.width - scrollView!.contentSize.width
-                    let diff_x_start = 0 - scrollView!.contentOffset.x
-                    
-                    let diff_y_end = scrollView!.contentOffset.y + scrollView!.bounds.height - scrollView!.contentSize.height
-                    let diff_y_start = 0 - scrollView!.contentOffset.y
-
-                    print("diffs")
-                    print(diff_x_start)
-                    print(diff_x_end)
-                    print(diff_y_start)
-                    print(diff_y_end)
-                    
-                    
-                    // VERTICAL SCROLL
-                    
-                    // pull to refresh
-                    if (pullToRefreshViewState == ViewState.Ready) {
-                        indicatorPullToRefresh.interactiveProgress = scrollView!.contentOffset.y / -130.0
+                    switch(drag) {
+                    case .Top:
+                        switch(pullToRefreshViewState) {
+                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                            indicatorPullToRefresh.interactiveProgress = diff_y_start / 130.0
+                            if (diff_y_start < 65.0) {
+                                setState(ViewState.Normal)
+                            }
+                        case ViewState.Normal:
+                            indicatorPullToRefresh.interactiveProgress = diff_y_start / 130.0
+                            setState(ViewState.ReadyVertical)
+                        default: break
+                        }
                         
-                        if (scrollView!.contentOffset.y > -65.0 && scrollView!.contentOffset.y < 0.0) {
-                            setState(ViewState.Normal)
+                    case .Left:
+                        switch(pullToRefreshViewState) {
+                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                            indicatorPullToRefresh.interactiveProgress = diff_x_start / 130.0
+                            if (diff_x_start < 65.0) {
+                                setState(ViewState.Normal)
+                            }
+                        case ViewState.Normal:
+                            indicatorPullToRefresh.interactiveProgress = diff_x_start / 130.0
+                            setState(ViewState.ReadyHorizontal)
+                        default: break
                         }
-                    } else if (pullToRefreshViewState == ViewState.Normal) {
-                        indicatorPullToRefresh.interactiveProgress = scrollView!.contentOffset.y / -130.0
-                        
-                        if (scrollView!.contentOffset.y < -65.0) {
-                            setState(ViewState.Ready)
+                    case .Bottom:
+                        switch(loadMoreViewState) {
+                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                            indicatorLoadMore.interactiveProgress = diff_y_end / 130.0
+                            if (diff_y_end < 65.0) {
+                                setLoadMoreState(ViewState.Normal)
+                            }
+                        case ViewState.Normal:
+                            indicatorLoadMore.interactiveProgress = diff_y_end / 130.0
+                            setLoadMoreState(ViewState.ReadyVertical)
+                        default: break
                         }
-                    } else if (pullToRefreshViewState == ViewState.Loading) {
-                        if (scrollView!.contentOffset.y >= 0) {
-                            scrollView!.contentInset = startingContentInset!
-                        } else {
-                            scrollView!.contentInset = UIEdgeInsetsMake(min(-scrollView!.contentOffset.y, 60.0), 0, 0, 0);
-                        }
+                    default: break
+                    
                     }
-                    // load more
-                    let diff = scrollView!.contentOffset.y + scrollView!.bounds.height - scrollView!.contentSize.height
-
-                    if (loadMoreViewState == ViewState.Ready) {
-                        indicatorLoadMore.interactiveProgress = diff / 130.0
-                        
-                        if (diff < 65.0) {
-                            setLoadMoreState(ViewState.Normal)
-                        }
-                    } else if (loadMoreViewState == ViewState.Normal) {
-                        indicatorLoadMore.interactiveProgress = diff / 130.0
-                        
-                        if (diff > 65) {
-                            setLoadMoreState(ViewState.Ready)
-                        }
-                    } else if (loadMoreViewState == ViewState.Loading) {
-                        if (diff <= 0) {
-                            scrollView!.contentInset = startingContentInset!
-                        } else {
-                            scrollView!.contentInset = UIEdgeInsetsMake(0, 0, 60.0, 0.0);
-                        }
-                    }
-                    
                 } else {
                     // pull to refresh
-                    if (pullToRefreshViewState == ViewState.Ready) {
+                    if (pullToRefreshViewState == ViewState.ReadyHorizontal || pullToRefreshViewState == ViewState.ReadyVertical) {
                         UIView.animateWithDuration(0.2, animations: {
-                            self.setState(ViewState.Loading)
+                            if self.pullToRefreshViewState == ViewState.ReadyHorizontal {
+                                self.setState(ViewState.LoadingHorizontal)
+                            } else {
+                                self.setState(ViewState.LoadingVertical)
+                            }
                         })
                         
                         if let pullToRefreshLoadMoreDelegate = pullToRefreshLoadMoreDelegate {
@@ -171,9 +202,13 @@ public class MRPullToRefreshLoadMore:NSObject {
                     }
                     
                     // load more
-                    if (loadMoreViewState == ViewState.Ready) {
+                    if (loadMoreViewState == ViewState.ReadyHorizontal || loadMoreViewState == ViewState.ReadyVertical) {
                         UIView.animateWithDuration(0.2, animations: {
-                            self.setLoadMoreState(ViewState.Loading)
+                            if self.pullToRefreshViewState == ViewState.ReadyHorizontal {
+                                self.setLoadMoreState(ViewState.LoadingHorizontal)
+                            } else {
+                                self.setLoadMoreState(ViewState.LoadingVertical)
+                            }
                         })
                         
                         if let pullToRefreshLoadMoreDelegate = pullToRefreshLoadMoreDelegate {

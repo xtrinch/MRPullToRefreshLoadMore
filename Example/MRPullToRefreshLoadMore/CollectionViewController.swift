@@ -24,7 +24,12 @@ class CollectionViewController:UIViewController, MRPullToRefreshLoadMoreDelegate
         return cell
     }
         
-    func viewShouldRefresh() {}
+    func viewShouldRefresh() {
+        print("view should refresh")
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
+            self.collectionView.pullToRefresh.setState(MRPullToRefreshLoadMore.ViewState.Normal)
+        }
+    }
     
     func viewShouldLoadMore() {}
 }
