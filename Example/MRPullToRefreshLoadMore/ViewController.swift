@@ -56,7 +56,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         //
         print("view should refresh")
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-            self.tableView.pullToRefresh.setState(MRPullToRefreshLoadMore.ViewState.Normal)
+            self.tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
         }
         
     }

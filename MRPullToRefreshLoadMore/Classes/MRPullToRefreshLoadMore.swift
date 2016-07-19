@@ -49,7 +49,7 @@ public class MRPullToRefreshLoadMore:NSObject {
         startingContentInset = scrollView.contentInset
         print(startingContentInset)
         self.enabled = true
-        setState(ViewState.Normal)
+        setPullState(ViewState.Normal)
         setLoadMoreState(ViewState.Normal)
     }
     
@@ -57,19 +57,21 @@ public class MRPullToRefreshLoadMore:NSObject {
         loadMoreViewState = state
         
         switch (state) {
-            case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
-                scrollView!.contentInset = self.startingContentInset!
-                indicatorLoadMore.setAnimating(false)
-                
-            case ViewState.Normal:
-                indicatorLoadMore.setAnimating(false)
-                UIView.animateWithDuration(0.2, animations: {
-                    self.scrollView!.contentInset = self.startingContentInset!
-                })
-                
-            case ViewState.LoadingVertical, ViewState.LoadingHorizontal:
-                indicatorLoadMore.setAnimating(true)
-                scrollView!.contentInset = UIEdgeInsetsMake(0.0, 0.0, 60.0, 0.0)
+        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+            scrollView!.contentInset = self.startingContentInset!
+            indicatorLoadMore.setAnimating(false)
+            
+        case ViewState.Normal:
+            indicatorLoadMore.setAnimating(false)
+            UIView.animateWithDuration(0.2, animations: {
+                self.scrollView!.contentInset = self.startingContentInset!
+            })
+        case ViewState.LoadingVertical:
+            indicatorLoadMore.setAnimating(true)
+            scrollView!.contentInset = UIEdgeInsetsMake(0.0, 0.0, 60.0, 0.0)
+        case ViewState.LoadingHorizontal:
+            indicatorLoadMore.setAnimating(true)
+            scrollView!.contentInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 60.0)
                 
             default:
                 break;
@@ -77,30 +79,30 @@ public class MRPullToRefreshLoadMore:NSObject {
     }
     
     
-    public func setState(state:ViewState) {
+    public func setPullState(state:ViewState) {
         pullToRefreshViewState = state
         
         switch (state) {
-            case ViewState.ReadyHorizontal, ViewState.ReadyVertical:
-                scrollView!.contentInset = self.startingContentInset!
-                indicatorPullToRefresh.setAnimating(false)
-            
-            case ViewState.Normal:
-                indicatorPullToRefresh.setAnimating(false)
-                UIView.animateWithDuration(0.2, animations: {
-                    self.scrollView!.contentInset = self.startingContentInset!
-                })
-            
-            case ViewState.LoadingHorizontal:
-                indicatorPullToRefresh.setAnimating(true)
-                scrollView!.contentInset = UIEdgeInsetsMake(0.0, 60.0, 0.0, 0.0)
-            
-            case ViewState.LoadingVertical:
-                indicatorPullToRefresh.setAnimating(true)
-                scrollView!.contentInset = UIEdgeInsetsMake(60.0, 0.0, 0.0, 0.0)
-            
-            default:
-            break;
+        case ViewState.ReadyHorizontal, ViewState.ReadyVertical:
+            scrollView!.contentInset = self.startingContentInset!
+            indicatorPullToRefresh.setAnimating(false)
+        
+        case ViewState.Normal:
+            indicatorPullToRefresh.setAnimating(false)
+            UIView.animateWithDuration(0.2, animations: {
+                self.scrollView!.contentInset = self.startingContentInset!
+            })
+        
+        case ViewState.LoadingHorizontal:
+            indicatorPullToRefresh.setAnimating(true)
+            scrollView!.contentInset = UIEdgeInsetsMake(0.0, 60.0, 0.0, 0.0)
+        
+        case ViewState.LoadingVertical:
+            indicatorPullToRefresh.setAnimating(true)
+            scrollView!.contentInset = UIEdgeInsetsMake(60.0, 0.0, 0.0, 0.0)
+        
+        default:
+        break;
         }
     }
     
@@ -122,13 +124,13 @@ public class MRPullToRefreshLoadMore:NSObject {
                 var drag:Drag = .None
                 
                 // pull to refresh
-                if diff_x_start > 0 {
+                if diff_x_start > 0.0 {
                     drag = .Left
-                } else if diff_y_start > 0 {
+                } else if diff_y_start > 0.0 {
                     drag = .Top
-                } else if diff_x_end > 0 {
+                } else if diff_x_end > 0.0 {
                     drag = .Right
-                } else if diff_y_end > 0 {
+                } else if diff_y_end > 0.0 {
                     drag = .Bottom
                 }
                 
@@ -139,6 +141,8 @@ public class MRPullToRefreshLoadMore:NSObject {
                     indicatorPullToRefresh.frame = CGRectMake(-45, scrollView!.bounds.height/2 - 15, indicatorSize.width, indicatorSize.height)
                 case .Bottom:
                     indicatorLoadMore.frame = CGRectMake(scrollView!.bounds.width/2 - indicatorSize.width/2, 15 + scrollView!.contentSize.height, indicatorSize.width, indicatorSize.height)
+                case .Right:
+                    indicatorLoadMore.frame = CGRectMake(scrollView!.contentSize.width + 15, scrollView!.bounds.height/2 - 15, indicatorSize.width, indicatorSize.height)
                 default: break
                 }
                 
@@ -147,52 +151,71 @@ public class MRPullToRefreshLoadMore:NSObject {
                     switch(drag) {
                     case .Top:
                         switch(pullToRefreshViewState) {
-                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                        case ViewState.ReadyVertical:
                             indicatorPullToRefresh.interactiveProgress = diff_y_start / 130.0
                             if (diff_y_start < 65.0) {
-                                setState(ViewState.Normal)
+                                setPullState(ViewState.Normal)
                             }
                         case ViewState.Normal:
                             indicatorPullToRefresh.interactiveProgress = diff_y_start / 130.0
-                            setState(ViewState.ReadyVertical)
+                            if (diff_y_start > 65.0) {
+                                setPullState(ViewState.ReadyVertical)
+                            }
                         default: break
                         }
                         
                     case .Left:
                         switch(pullToRefreshViewState) {
-                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                        case ViewState.ReadyHorizontal:
                             indicatorPullToRefresh.interactiveProgress = diff_x_start / 130.0
                             if (diff_x_start < 65.0) {
-                                setState(ViewState.Normal)
+                                setPullState(ViewState.Normal)
                             }
                         case ViewState.Normal:
                             indicatorPullToRefresh.interactiveProgress = diff_x_start / 130.0
-                            setState(ViewState.ReadyHorizontal)
+                            if (diff_x_start > 65.0) {
+                                setPullState(ViewState.ReadyHorizontal)
+                            }
                         default: break
                         }
                     case .Bottom:
                         switch(loadMoreViewState) {
-                        case ViewState.ReadyVertical, ViewState.ReadyHorizontal:
+                        case ViewState.ReadyVertical:
                             indicatorLoadMore.interactiveProgress = diff_y_end / 130.0
                             if (diff_y_end < 65.0) {
                                 setLoadMoreState(ViewState.Normal)
                             }
                         case ViewState.Normal:
                             indicatorLoadMore.interactiveProgress = diff_y_end / 130.0
-                            setLoadMoreState(ViewState.ReadyVertical)
+                            if (diff_y_end > 65.0) {
+                                setLoadMoreState(ViewState.ReadyVertical)
+                            }
+                        default: break
+                        }
+                    case .Right:
+                        switch(loadMoreViewState) {
+                        case ViewState.ReadyHorizontal:
+                            indicatorLoadMore.interactiveProgress = diff_x_end / 130.0
+                            if (diff_x_end < 65.0) {
+                                setLoadMoreState(ViewState.Normal)
+                            }
+                        case ViewState.Normal:
+                            indicatorLoadMore.interactiveProgress = diff_x_end / 130.0
+                            if (diff_x_end > 65.0) {
+                                setLoadMoreState(ViewState.ReadyHorizontal)
+                            }
                         default: break
                         }
                     default: break
-                    
                     }
                 } else {
                     // pull to refresh
                     if (pullToRefreshViewState == ViewState.ReadyHorizontal || pullToRefreshViewState == ViewState.ReadyVertical) {
                         UIView.animateWithDuration(0.2, animations: {
                             if self.pullToRefreshViewState == ViewState.ReadyHorizontal {
-                                self.setState(ViewState.LoadingHorizontal)
+                                self.setPullState(ViewState.LoadingHorizontal)
                             } else {
-                                self.setState(ViewState.LoadingVertical)
+                                self.setPullState(ViewState.LoadingVertical)
                             }
                         })
                         
@@ -204,7 +227,7 @@ public class MRPullToRefreshLoadMore:NSObject {
                     // load more
                     if (loadMoreViewState == ViewState.ReadyHorizontal || loadMoreViewState == ViewState.ReadyVertical) {
                         UIView.animateWithDuration(0.2, animations: {
-                            if self.pullToRefreshViewState == ViewState.ReadyHorizontal {
+                            if self.loadMoreViewState == ViewState.ReadyHorizontal {
                                 self.setLoadMoreState(ViewState.LoadingHorizontal)
                             } else {
                                 self.setLoadMoreState(ViewState.LoadingVertical)
@@ -216,6 +239,8 @@ public class MRPullToRefreshLoadMore:NSObject {
                         }
                     }
                 }
+                
+                print(loadMoreViewState)
             }
         default:
             break
