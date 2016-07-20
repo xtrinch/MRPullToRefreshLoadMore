@@ -11,6 +11,18 @@ Pull to refresh and load more loader with delegate methods for UITableViews, UIC
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+Pull to refresh a table view:
+
+<img src='https://raw.githubusercontent.com/xTrinch/MRPullToRefreshLoadMore/master/Graphics/tableViewPullToRefresh.gif' width=200>
+
+Load more in a table view:
+
+<img src='https://raw.githubusercontent.com/xTrinch/MRPullToRefreshLoadMore/master/Graphics/tableViewLoadMore.gif' width=200>
+
+Pull to refresh in horizontally scrolling collection view:
+
+<img src='https://raw.githubusercontent.com/xTrinch/MRPullToRefreshLoadMore/master/Graphics/collectionViewPullToRefresh.gif' width=200>
+
 ## Usage
 
     import MRPullToRefreshLoadMore
