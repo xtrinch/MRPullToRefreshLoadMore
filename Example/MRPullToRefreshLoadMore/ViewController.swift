@@ -20,7 +20,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         tableView.delegate = self
         tableView.dataSource = self
         tableView.pullToRefresh.pullToRefreshLoadMoreDelegate = self
-        
+        tableView.pullToRefresh.indicatorTintColor = UIColor.lightGrayColor()
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -52,22 +52,30 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // MARK: MRPullToRefreshLoadMoreDelegate functions
     
-    func viewShouldRefresh() {
-        //
+    func viewShouldRefresh(scrollView:UIScrollView) {
+        // if you need a tableview instance
+        guard let tableView = scrollView as? MRTableView else {
+            return
+        }
+        
         print("view should refresh")
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-            self.tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
+            tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
         }
         
     }
     
-    func viewShouldLoadMore() {
-        //
+    func viewShouldLoadMore(scrollView:UIScrollView) {
+        // if you need a tableview instance
+        guard let tableView = scrollView as? MRTableView else {
+            return
+        }
+        
         print("view should load more")
         moreLoaded = true
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-            self.tableView.reloadData()
-            self.tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
+            tableView.reloadData()
+            tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
         }
     }
 }

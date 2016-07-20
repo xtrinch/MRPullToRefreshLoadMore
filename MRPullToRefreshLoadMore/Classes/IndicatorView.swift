@@ -7,7 +7,7 @@ public class IndicatorView: UIView {
     
     public var indicatorTintColor: UIColor? {
         didSet {
-            circleLayer.strokeColor = (tintColor ?? UIColor.whiteColor()).CGColor
+            circleLayer.strokeColor = (indicatorTintColor ?? UIColor.whiteColor()).CGColor
         }
     }
     

@@ -3,7 +3,7 @@
 import Quick
 import Nimble
 import MRPullToRefreshLoadMore
-
+/*
 class TableOfContentsSpec: QuickSpec {
     override func spec() {
         describe("these will fail") {
@@ -48,3 +48,4 @@ class TableOfContentsSpec: QuickSpec {
         }
     }
 }
+ */

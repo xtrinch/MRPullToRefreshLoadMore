@@ -1,8 +1,8 @@
 import UIKit
 
 @objc public protocol MRPullToRefreshLoadMoreDelegate {
-    func viewShouldRefresh()
-    func viewShouldLoadMore()
+    func viewShouldRefresh(scrollView:UIScrollView)
+    func viewShouldLoadMore(scrollView:UIScrollView)
 }
 
 public class MRPullToRefreshLoadMore:NSObject {
@@ -18,6 +18,13 @@ public class MRPullToRefreshLoadMore:NSObject {
     public var activityView: UIActivityIndicatorView?
     public var indicatorPullToRefresh = IndicatorView()
     public var indicatorLoadMore = IndicatorView()
+    
+    public var indicatorTintColor: UIColor? {
+        didSet {
+            indicatorLoadMore.indicatorTintColor = (indicatorTintColor ?? UIColor.whiteColor())
+            indicatorPullToRefresh.indicatorTintColor = (indicatorTintColor ?? UIColor.whiteColor())
+        }
+    }
 
     var indicatorSize: CGSize = CGSizeMake(30.0, 30.0)
     public var textColor:UIColor = UIColor.whiteColor()
@@ -212,7 +219,7 @@ public class MRPullToRefreshLoadMore:NSObject {
                         })
                         
                         if let pullToRefreshLoadMoreDelegate = pullToRefreshLoadMoreDelegate {
-                            pullToRefreshLoadMoreDelegate.viewShouldRefresh()
+                            pullToRefreshLoadMoreDelegate.viewShouldRefresh(scrollView!)
                         }
                     }
                     
@@ -227,7 +234,7 @@ public class MRPullToRefreshLoadMore:NSObject {
                         })
                         
                         if let pullToRefreshLoadMoreDelegate = pullToRefreshLoadMoreDelegate {
-                            pullToRefreshLoadMoreDelegate.viewShouldLoadMore()
+                            pullToRefreshLoadMoreDelegate.viewShouldLoadMore(scrollView!)
                         }
                     }
                 }
