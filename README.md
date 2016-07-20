@@ -46,6 +46,10 @@ it, simply add the following line to your Podfile:
 pod "MRPullToRefreshLoadMore"
 ```
 
+## Issues
+
+- Need to disable refresh / load more if either of them is already under way
+
 ## Author
 
 xTrinch, mojca.rojko@gmail.com
