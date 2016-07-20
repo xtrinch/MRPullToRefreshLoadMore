@@ -58,9 +58,10 @@ it, simply add the following line to your Podfile:
 pod "MRPullToRefreshLoadMore"
 ```
 
-## Issues
+## Issues && Todo
 
 - Need to disable refresh / load more if either of them is already under way
+- Add scrollview support
 
 ## Author
 
