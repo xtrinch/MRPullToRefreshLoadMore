@@ -41,9 +41,7 @@ public class MRPullToRefreshLoadMore:NSObject {
     public func initWithScrollView(scrollView:UIScrollView) {
         scrollView.addSubview(indicatorPullToRefresh)
         scrollView.addSubview(indicatorLoadMore)
-        
-        //indicatorLoadMore.setAnimating(true)
-        
+                
         self.scrollView = scrollView
         scrollView.addObserver(self, forKeyPath: "contentOffset", options: NSKeyValueObservingOptions.New, context: nil)
         startingContentInset = scrollView.contentInset
@@ -72,9 +70,6 @@ public class MRPullToRefreshLoadMore:NSObject {
         case ViewState.LoadingHorizontal:
             indicatorLoadMore.setAnimating(true)
             scrollView!.contentInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 60.0)
-                
-            default:
-                break;
         }
     }
     
@@ -100,9 +95,6 @@ public class MRPullToRefreshLoadMore:NSObject {
         case ViewState.LoadingVertical:
             indicatorPullToRefresh.setAnimating(true)
             scrollView!.contentInset = UIEdgeInsetsMake(60.0, 0.0, 0.0, 0.0)
-        
-        default:
-        break;
         }
     }
     
