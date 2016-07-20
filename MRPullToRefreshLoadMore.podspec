@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MRPullToRefreshLoadMore'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'Easy and simple way to add pull to refresh and load more for table views, collection views and even scrollviews'
 
 # This description is used to generate tags and improve search results.
