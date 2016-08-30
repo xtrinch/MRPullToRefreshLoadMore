@@ -38,12 +38,33 @@ Pull to refresh in horizontally scrolling collection view:
             tableView.pullToRefresh.pullToRefreshLoadMoreDelegate = self
         }
         
-        func viewShouldRefresh() {
-          // refresh tableview
+        // MARK: MRPullToRefreshLoadMoreDelegate functions
+    
+        func viewShouldRefresh(scrollView:UIScrollView) {
+            // if you need a tableview instance
+            guard let tableView = scrollView as? MRTableView else {
+                return
+            }
+            
+            print("view should refresh")
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
+                tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
+            }
+            
         }
         
-        func viewShouldLoadMore() {
-          // load more in tableview
+        func viewShouldLoadMore(scrollView:UIScrollView) {
+            // if you need a tableview instance
+            guard let tableView = scrollView as? MRTableView else {
+                return
+            }
+            
+            print("view should load more")
+            moreLoaded = true
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
+                tableView.reloadData()
+                tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
+            }
         }
     }
 
