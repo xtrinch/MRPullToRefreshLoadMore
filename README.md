@@ -46,10 +46,10 @@ Pull to refresh in horizontally scrolling collection view:
                 return
             }
             
-            print("view should refresh")
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-                tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
-            }
+            // refresh table view 
+            
+            tableView.reloadData()
+            tableView.pullToRefresh.setPullState(MRPullToRefreshLoadMore.ViewState.Normal)
             
         }
         
@@ -59,12 +59,10 @@ Pull to refresh in horizontally scrolling collection view:
                 return
             }
             
-            print("view should load more")
-            moreLoaded = true
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) { () -> Void in
-                tableView.reloadData()
-                tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
-            }
+            // load more 
+            
+            tableView.reloadData()
+            tableView.pullToRefresh.setLoadMoreState(MRPullToRefreshLoadMore.ViewState.Normal)
         }
     }
 
